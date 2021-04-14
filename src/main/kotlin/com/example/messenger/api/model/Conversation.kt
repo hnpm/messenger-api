@@ -27,6 +27,7 @@ class Conversation(
     @DateTimeFormat
     val createdAt: Date = Date.from(Instant.now()),
 
+) {
     @OneToMany(mappedBy = "conversation", targetEntity = Message::class)
-    var messages: Collection<Message>? = null
-)
+    lateinit var messages: Collection<Message>
+}

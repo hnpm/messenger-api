@@ -25,13 +25,13 @@ class UserServiceImpl(val repository: UserRepository): UserService {
 
     override fun listUsers(currentUser: User): List<User> = repository.findAll().filter { it != currentUser }.toList()
 
-    override fun retrieveUserData(username: String): User? {
+    override fun retrieveUserData(username: String): User {
         val user = repository.findByUsername(username)
         obscurePassword(user)
-        return user
+        return user!!
     }
 
-    override fun retrieveUserData(id: Long): User? {
+    override fun retrieveUserData(id: Long): User {
         val user = repository.findById(id).orElseThrow {
             InvalidUserIdException("A user with an id of '$id' does not exist.")
         }
@@ -43,15 +43,17 @@ class UserServiceImpl(val repository: UserRepository): UserService {
         return repository.findByUsername(username) != null
     }
 
-    private fun obscurePassword(user: User?) {
-        user?.password = "XXX XXX XXX"
-    }
-
-    fun updateUserStatus(currentUser: User, updateDetails: User): User {
+    override fun updateUserStatus(currentUser: User, updateDetails: User): User {
         if (updateDetails.status.isEmpty()) {
             throw UserStatusEmptyException()
         }
         currentUser.status = updateDetails.status
         return repository.save(currentUser)
     }
+
+    private fun obscurePassword(user: User?) {
+        user?.password = "XXX XXX XXX"
+    }
+
+
 }
